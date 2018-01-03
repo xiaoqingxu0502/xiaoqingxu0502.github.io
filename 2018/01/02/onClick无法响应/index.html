@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="default">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="bug场景：2017年11月初的某个下午，大家都很开心的在测试自己写的代码，因为明天就要提测了，突然组内有一位同事说：不会吧，现在出现这样的bug，他说RecyclerView里面包裹的HeaderView点击没有反应，点击事件没反应！！！不会吧，刚开始写android第一行代码就已经会写的点击事件不响应了；虽然我们很快的规避了这个bug，但是规避毕竟只是规避，并没有找出问题的根本，但是作为程序员">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android onClick 事件无法响应，疑似被缓存">
+<meta property="og:url" content="http://yoursite.com/2018/01/02/onClick无法响应/index.html">
+<meta property="og:site_name" content="Huj Blog">
+<meta property="og:description" content="bug场景：2017年11月初的某个下午，大家都很开心的在测试自己写的代码，因为明天就要提测了，突然组内有一位同事说：不会吧，现在出现这样的bug，他说RecyclerView里面包裹的HeaderView点击没有反应，点击事件没反应！！！不会吧，刚开始写android第一行代码就已经会写的点击事件不响应了；虽然我们很快的规避了这个bug，但是规避毕竟只是规避，并没有找出问题的根本，但是作为程序员">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://richtime.oss-cn-beijing.aliyuncs.com/blog/2_a.pdf">
+<meta property="og:image" content="http://richtime.oss-cn-beijing.aliyuncs.com/blog/2_b.pdf">
+<meta property="og:updated_time" content="2018-01-03T02:29:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android onClick 事件无法响应，疑似被缓存">
+<meta name="twitter:description" content="bug场景：2017年11月初的某个下午，大家都很开心的在测试自己写的代码，因为明天就要提测了，突然组内有一位同事说：不会吧，现在出现这样的bug，他说RecyclerView里面包裹的HeaderView点击没有反应，点击事件没反应！！！不会吧，刚开始写android第一行代码就已经会写的点击事件不响应了；虽然我们很快的规避了这个bug，但是规避毕竟只是规避，并没有找出问题的根本，但是作为程序员">
+<meta name="twitter:image" content="http://richtime.oss-cn-beijing.aliyuncs.com/blog/2_a.pdf">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/02/onClick无法响应/"/>
+
+
+
+
+
+  <title>Android onClick 事件无法响应，疑似被缓存 | Huj Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?a96435849b0d99d48140fa5a9476fab7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Huj Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/02/onClick无法响应/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xiaoqingxu <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可。">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huj Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android onClick 事件无法响应，疑似被缓存</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-02T16:58:02+08:00">
+                2018-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="bug场景："><a href="#bug场景：" class="headerlink" title="bug场景："></a>bug场景：</h3><p>2017年11月初的某个下午，大家都很开心的在测试自己写的代码，因为明天就要提测了，突然组内有一位同事说：不会吧，现在出现这样的bug，他说RecyclerView里面包裹的HeaderView点击没有反应，点击事件没反应！！！不会吧，刚开始写android第一行代码就已经会写的点击事件不响应了；虽然我们很快的规避了这个bug，但是规避毕竟只是规避，并没有找出问题的根本，但是作为程序员怎么能知其然，而不知其所以然呢？闲暇之日，我开启了寻找bug之路，为了复现bug，我模拟了代码场景：我使用的RecyclerView是recyclerview-v7:25.2.0。</p>
+<h3 id="主要代码如下"><a href="#主要代码如下" class="headerlink" title="主要代码如下:"></a>主要代码如下:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">Activity如下:</span><br><span class="line">    RecyclerView mRecyclerView;</span><br><span class="line">    MyAdapter mAdapter;</span><br><span class="line">    List&lt;String&gt; mData = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void onCreate(@Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        mRecyclerView = (RecyclerView) findViewById(R.id.rv_container);</span><br><span class="line">        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));</span><br><span class="line">        mAdapter = new MyAdapter();</span><br><span class="line">        mAdapter.setHeaderView(View.inflate(this, R.layout.recyclerview_header, null));</span><br><span class="line">        mRecyclerView.setAdapter(mAdapter);</span><br><span class="line">        //request network</span><br><span class="line">        new Handler().postDelayed(new Runnable() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                //network response</span><br><span class="line">                mAdapter.setData(mData);</span><br><span class="line">                mAdapter.notifyDataSetChanged();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, 80);</span><br><span class="line">        //模拟服务端返回数据</span><br><span class="line">        for (int i = 0; i &lt; 6; i++) &#123;</span><br><span class="line">            mData.add(&quot;&quot; + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">xml如下:</span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;LinearLayout</span><br><span class="line">    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    xmlns:tools=&quot;http://schemas.android.com/tools&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot;</span><br><span class="line">    android:orientation=&quot;vertical&quot;</span><br><span class="line">    &gt;</span><br><span class="line"></span><br><span class="line">    &lt;android.support.v7.widget.RecyclerView</span><br><span class="line">        android:id=&quot;@+id/rv_container&quot;</span><br><span class="line">        android:layout_width=&quot;match_parent&quot;</span><br><span class="line">        android:layout_height=&quot;match_parent&quot;</span><br><span class="line">        android:scrollbars=&quot;vertical&quot;</span><br><span class="line">        android:layoutAnimation=&quot;@anim/layoutanimation&quot;</span><br><span class="line">        /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/LinearLayout&gt;</span><br><span class="line"></span><br><span class="line">layoutanimation如下:</span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;layoutAnimation xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    android:delay=&quot;50%&quot;</span><br><span class="line">    android:animation=&quot;@anim/alpha_item_anim&quot;&gt;&lt;/layoutAnimation&gt;</span><br><span class="line">    </span><br><span class="line">alpha_item_anim如下：</span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;set xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</span><br><span class="line">    &lt;alpha</span><br><span class="line">        android:duration=&quot;200&quot;</span><br><span class="line">        android:fromAlpha=&quot;0.0&quot;</span><br><span class="line">        android:toAlpha=&quot;1.0&quot; /&gt;</span><br><span class="line">&lt;/set&gt;</span><br><span class="line"></span><br><span class="line">MyAdapter extends RecyclerView.Adapter</span><br><span class="line">在其onCreateViewHolder方法内通过不同的viewType来区分HeaderView和ItemView。</span><br></pre></td></tr></table></figure>
+<p>以上代码就是我们常规使用RecyclerView的方式，可是当网络数据返回，页面刷新后却发现：头布局的点击事件无法响应，但是只要稍微滑动一下RecyclerView，之前所有的onClick事件都会响应。</p>
+<h3 id="针对bug现象，提出疑问："><a href="#针对bug现象，提出疑问：" class="headerlink" title="针对bug现象，提出疑问："></a>针对bug现象，提出疑问：</h3><p>onClick事件不能被响应，是否被拦截？不，肯定不是，因为在某个时刻，之前的onClick事件一次性释放出来。所以，事件没有并被消费，而是被保存起来了，那么：</p>
+<ul>
+<li>1.onClick事件的触发及响应流程是什么呢？</li>
+<li>2.在什么场景下，onClick才会被保存起来？</li>
+<li>3.onClick事件是因为什么原因而被保存起来?</li>
+</ul>
+<h4 id="只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找："><a href="#只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找：" class="headerlink" title="只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找："></a>只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找：</h4><p>为了清楚onClick事件的触发及响应流程，我们需要对android sdk 源码进行debug调试，以往的经验都是对自己写的代码进行debug调试，还从没对sdk源码debug调试，带着好奇心使用手机去debug源码，第一个拦路虎出现了：源码错行，因为手机的Android版本和编译的sdk版本不同，解决这个问题有俩种方案：</p>
+<ul>
+<li><p>将手机刷成和编译sdk相同的版本，然后进行调试。</p>
+</li>
+<li><p>使用同版本的模拟器调试。</p>
+<p> 为了快捷，我使用了模拟器方式，android studio自带的模拟器有点卡，于是下载了一个genymotion。自此，sdk源码的调试便可方便自如，调试环境如下：</p>
+<h4 id="Android-SDK-25-Android模拟7-1"><a href="#Android-SDK-25-Android模拟7-1" class="headerlink" title="Android SDK 25  Android模拟7.1"></a>Android SDK 25  Android模拟7.1</h4></li>
+</ul>
+<p>在View源码中的dispatchTouchEvent可以发现onTouch是被最先回调的，然后会在onTouchEvent的MotionEvent.ACTION_UP事件中post一条消息，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public boolean post(Runnable action) &#123;</span><br><span class="line">       final AttachInfo attachInfo = mAttachInfo;</span><br><span class="line">       if (attachInfo != null) &#123;</span><br><span class="line">           return attachInfo.mHandler.post(action);</span><br><span class="line">       &#125;</span><br><span class="line">       getRunQueue().post(action);</span><br><span class="line">       return true;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>从上面代码可以很直观看出：如果attachInfo ！= null，会用handler向主线程的looper发一条message，经测试得知正常的一次onClick事件的触发及响应流程如下图：</p>
+<p><img src="http://richtime.oss-cn-beijing.aliyuncs.com/blog/2_a.pdf" alt=""></p>
+<p>根据上图流程，调试RecyclerView头布局的onClick事件时发现：attachInfo == null，所以造成点击事件没有被及时回调，而是调用getRunQueue().post(action)，将action缓存HandlerActionQueue里面，而在dispatchAttachedToWindow时会调用mRunQueue.executeActions；也就是说：之所以出现点击事件无法响／应，是因为attachInfo == null，而造成点击事件缓存是因为getRunQueue().post(action)，至于为什么会在某个时刻一次性释放onClick，某个时刻指的是：dispatchAttachedToWindow时，一次性释放是因为调用mRunQueue.executeActions。</p>
+<p>截止目前为止，上面提到的三个疑问，解决了俩个，还剩最后一个没有解决；而最后一个也是最重要的一个：onClick事件是因为什么原因而被保存起来？是因为attachInfo = null被保存起来，那么View的attachInfo为什么会为null？翻开View的源码:attachInfo是在dispatchAttachedToWindow时赋值的，只有在dispatchDetachedFromWindow方法内才会将attachInfo = null，而View的dispatchDetachedFromWindow会在ViewGourp调用，可是在ViewGroup中多处都会调用View的dispatchDetachedFromWindow，为了更准确的寻找调用地方，只能在每一个可能发生的位置break point，经过调试得知是在ViewGroup的finishAnimatingView中调用View的dispatchDetachedFromWindow，只不过在ViewGroup的finishAnimatingView中调用VIew的dispatchDetachedFromWindow是有条件的：mDisappearingChildren != null。</p>
+<p>####接下来我们寻找mDisappearingChildren是在什么时候被赋值的？<br>上面当网络数据返回，调用Adapter的notityDataSetChanged时，会调用mObservable.notifyChanged()，接着调用mObservers.get(i).onChanged()，接着调用requestLayout：requestLayout是我们非常熟悉的方法，它的执行流程如下图：</p>
+<p><img src="http://richtime.oss-cn-beijing.aliyuncs.com/blog/2_b.pdf" alt=""></p>
+<p>当调用RecyclerView的onMeasure时，会调用RecyclerView的dispatchLayoutStep2，接着调用mLayout.onLayoutChildren，而我使用的LinearLayoutManager，即调用LinearLayoutManager的onLayoutChildren，接着调用RecyclerView的detachAndScrapAttachedViews，接着调用RecyclerView的scrapOrRecycleView，接着调用RecyclerView的removeViewAt，接着调用mChildHelper.removeViewAt,然后调用RecyclerView.this.removeViewAt，而RecyclerView extends ViewGourp 即调用ViewGroup的removeViewInternal，此时view.getAnimation() != null，也就是动画还未执行完，会执行ViewGroup的addDisappearingView，在addDisappearingView方法内会为mDisappearingChildren赋值，到此为止，整个流程大概跑通了，通俗将就是：</p>
+<p>当网络请求回来之后，刷新RecyclerView时，因为头布局item已经存在，并且正在执行动画，所以导致mDisappearingChildren  != null，当动画执行完成之后，却因为mDisappearingChildren  != null ，而执行view.dispatchDetachedFromWindow()从而将mAttachInfo置为null。</p>
+<p>以上就是为什么点击RecyclerView的头布局item无法响应点击事件的全部流程分析。</p>
+<p>既然原因都已经如此透彻了，要想解决这个bug，自然轻而易举：比如在网络返回需要刷新RecyclerView时，可以清除RecyclerView内Item的Animation；至此，bug已经被正面解决了。</p>
+<p>可是我还是有一个疑问：<br>我始终觉得这属于RecyclerView的bug，毕竟大多数Android Developer并不清楚以上整个流程，也不能轻而易举的在众多业务代码中找到：Item点击事件无法响应，是因为RecyclerView里面Item的Animation还未执行完时，我们主动调用Adapter的notityDataSetChanged去刷新RecyclerView导致的，带着这个疑问我继续寻找：终于，皇天不负有人心，最终发现：<br>Google Android官方在recyclerview-v7:25.4.0上修复了这个bug（其实25.4.0发布也没多久），而我使用的还是recyclerview-v7:25.2.0，Google修复的办法其实我们的方法一模一样，它是在:mChildHelper的removeViewAt时调用了child.clearAnimation()，也就是说：当RecyclerView重新刷新的时候，如果包裹的View有Animation，它会清除此Animation。正如注释：<br>Clear any android.view.animation.Animation that may prevent the item from detaching when being removed. If a child is re-added before the lazy detach occurs, it will receive invalid attach/detach sequencing.<br>这样的话：因为View的Animation被清除了，当再次调用draw方法绘制当前View的时候，便不会调用parent.finishAnimatingView(this, a)，也就不存在使得mAttachInfo置为null的情况了。</p>
+<p>经此一战之后，得出一个重要结论：</p>
+<h4 id="Android-sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。"><a href="#Android-sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。" class="headerlink" title="Android sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。"></a>Android sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。</h4><hr>
+<h3 id="后续："><a href="#后续：" class="headerlink" title="后续："></a>后续：</h3><p>关于上面view.getAnimation() != nul分析：</p>
+<p>onCreat执行setContentView之后然后初始化xml，在ViewGroup的构造方法中调用initFromAttributes，如果发现ViewGroup中有layoutAnimation属性，会在ViewGroup中创建LayoutAnimationController对象；</p>
+<p>onResume执行时依次会遍历执行child view的 layout，measure，draw（Activity中有ActivityThread，ActivityThread中的handleResumeActivity调用WindowManagerGlobal的addView，WindowManagerGlobal中的addView调用ViewRootImpl的setView方法，而setView中调用了requestLayout，requestLayout中调用了scheduleTraversals方法，scheduleTraversals中使用Choreographer发送一个message，最后会回调doTraversal，执行performTraversals。然后进行measure，layout，draw）</p>
+<p>View的draw方法中会调用dispatchDraw，而View中的dispatchDraw是一个空实现，具体的实现在ViewGroup当中，当dispatchDraw执行时，如果mLayoutAnimationController != null，会遍历子View执行bindLayoutAnimation，在bindLayoutAnimation中调用View的setAnimation方法。</p>
+<p>通俗讲就是：如果你在xml为某个View或者ViewGroup设置layoutAnimation属性，当它绘制的时候便会调用View的setAnimation方法，或者遍历里面所有的View调用它的setAnimation方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/08/涂鸦/" rel="next" title="Android涂鸦及图片缩放拖动">
+                <i class="fa fa-chevron-left"></i> Android涂鸦及图片缩放拖动
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xiaoqingxu <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可。</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#bug场景："><span class="nav-number">1.</span> <span class="nav-text">bug场景：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主要代码如下"><span class="nav-number">2.</span> <span class="nav-text">主要代码如下:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#针对bug现象，提出疑问："><span class="nav-number">3.</span> <span class="nav-text">针对bug现象，提出疑问：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找："><span class="nav-number">3.1.</span> <span class="nav-text">只要解决上面三个疑问，答案自然揭晓，带着这些疑问，开始寻找：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Android-SDK-25-Android模拟7-1"><span class="nav-number">3.2.</span> <span class="nav-text">Android SDK 25  Android模拟7.1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Android-sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。"><span class="nav-number">3.3.</span> <span class="nav-text">Android sdk太过庞大，虽然被很多人使用，但也难免会因为使用不当出现bug，遇到问题，要敢于质疑，小心论证；还有就是一定要及时更新Android最新发布的sdk版本，时刻紧跟google官方节奏。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后续："><span class="nav-number">4.</span> <span class="nav-text">后续：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiaoqingxu <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可。</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
